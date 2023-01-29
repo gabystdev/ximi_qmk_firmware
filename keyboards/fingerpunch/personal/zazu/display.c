@@ -1,6 +1,6 @@
 #include "display.h"
 #include "quantum.h"
-#include "keyboards/mabroum/mab_pointing.h"
+// #include "keyboards/mabroum/mab_pointing.h"
 #include <ctype.h>
 
 lv_obj_t * mbox1;
@@ -110,16 +110,16 @@ uint8_t qmk_lv_active_layer(void) {
 void set_cpi_text_value(lv_obj_t* lbl) {
     if (lv_obj_is_valid(lbl)) {
         char buf[11];
-        snprintf(buf, sizeof(buf), "CPI: %d", (int)qmk_lv_get_cpi());
+        snprintf(buf, sizeof(buf), "CPI: %d", (int)pointing_device_get_cpi());
         lv_label_set_text(lbl, buf);
     }
 }
 
+#ifdef RGB_MATRIX_ENABLE
 extern rgb_config_t rgb_matrix_config;
 
 //----------------------------------------------------------
 // RGB Matrix naming
-#if defined(RGB_MATRIX_ENABLE)
 #    include <rgb_matrix.h>
 
 #    if defined(RGB_MATRIX_EFFECT)
@@ -158,7 +158,6 @@ const char *rgb_matrix_name(uint8_t effect) {
             return "UNKNOWN";
     }
 }
-#endif // defined(RGB_MATRIX_ENABLE)
 
 void set_rgbmode_text_value(lv_obj_t* lbl) {
     char buf[32];
@@ -190,6 +189,7 @@ void ui_render_rgbmode(lv_event_t * e) {
          set_rgbmode_text_value(ui_Screen1_Label_RGB);
     }
 }
+#endif // RGB_MATRIX_ENABLE
 
 void ui_render_altmod(lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -239,18 +239,29 @@ void ui_render_ctrlmod(lv_event_t * e) {
     }
 }
 
-void set_acc_text_value(lv_obj_t* lbl) {
-    if (lv_obj_is_valid(lbl)) {
-        char buf[11];
-      if(mab_get_pointer_acceleration_enabled()) {
-          snprintf(buf, sizeof(buf), "ACC: ON");
-      }
-      else {
-        snprintf(buf, sizeof(buf), "ACC: OFF");
-      }
-      lv_label_set_text(lbl, buf);
-    }
-}
+// SADEK: Add this back later when I implement functions for acceleration
+// #ifdef FP_POINTING_ACCELERATION_ENABLE
+// void set_acc_text_value(lv_obj_t* lbl) {
+//     if (lv_obj_is_valid(lbl)) {
+//         char buf[11];
+//       if(/* acceleration function call goes here */) {
+//           snprintf(buf, sizeof(buf), "ACC: ON");
+//       }
+//       else {
+//         snprintf(buf, sizeof(buf), "ACC: OFF");
+//       }
+//       lv_label_set_text(lbl, buf);
+//     }
+// }
+//
+// void ui_render_acc(lv_event_t * e) {
+//     lv_event_code_t event_code = lv_event_get_code(e);
+//     if(event_code == USER_EVENT_ACC_UPDATE) {
+//          set_acc_text_value(ui_Screen1_Label_ACC);
+//     }
+// }
+//
+// #endif
 
 void ui_render_cpi(lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -259,27 +270,16 @@ void ui_render_cpi(lv_event_t * e) {
     }
 }
 
-void ui_render_acc(lv_event_t * e) {
-    lv_event_code_t event_code = lv_event_get_code(e);
-    if(event_code == USER_EVENT_ACC_UPDATE) {
-         set_acc_text_value(ui_Screen1_Label_ACC);
-    }
-}
-
-uint16_t qmk_lv_get_cpi(void) {
-    uint16_t cpi = 0;
-    cpi = mab_get_pointer_sniping_enabled() ? mab_get_pointer_sniping_dpi() : mab_get_pointer_default_dpi();
-    return cpi;
-}
-
-
-bool qmk_lv_get_acc(void) {
-    return mab_get_pointer_acceleration_enabled();
-}
+// SADEK: Add this back later when I implement functions for acceleration
+// #ifdef FP_POINTING_ACCELERATION_ENABLE
+// bool qmk_lv_get_acc(void) {
+//     return mab_get_pointer_acceleration_enabled();
+// }
+// #endif
 
 void lvgl_event_triggers(void) {
     static uint16_t last_cpi   = 0xFFFF;
-    uint16_t curr_cpi   = mab_get_pointer_sniping_enabled() ? mab_get_pointer_sniping_dpi() : mab_get_pointer_default_dpi();
+    uint16_t curr_cpi   = pointing_device_get_cpi();
     bool cpi_redraw = false;
     if (last_cpi != curr_cpi) {
         last_cpi   = curr_cpi;
@@ -289,16 +289,19 @@ void lvgl_event_triggers(void) {
         lv_event_send(ui_Screen1_Label_CPI, USER_EVENT_CPI_UPDATE, NULL);
     }
 
-    static uint16_t last_acc   = 0xFFFF;
-    uint16_t curr_acc   = mab_get_pointer_acceleration_enabled();
-    bool acc_redraw = false;
-    if (last_acc != curr_acc) {
-        last_acc   = curr_acc;
-        acc_redraw = true;
-    }
-    if (acc_redraw) {
-        lv_event_send(ui_Screen1_Label_ACC, USER_EVENT_ACC_UPDATE, NULL);
-    }
+    // SADEK: Add this back later when I implement functions for acceleration
+    // #ifdef FP_POINTING_ACCELERATION_ENABLE
+    // static uint16_t last_acc   = 0xFFFF;
+    // uint16_t curr_acc   = mab_get_pointer_acceleration_enabled();
+    // bool acc_redraw = false;
+    // if (last_acc != curr_acc) {
+    //     last_acc   = curr_acc;
+    //     acc_redraw = true;
+    // }
+    // if (acc_redraw) {
+    //     lv_event_send(ui_Screen1_Label_ACC, USER_EVENT_ACC_UPDATE, NULL);
+    // }
+    // #endif
 
     bool layer_state_redraw = false;
     static uint32_t last_layer_state   = 0;
@@ -309,6 +312,7 @@ void lvgl_event_triggers(void) {
     if (layer_state_redraw) {
         lv_event_send(ui_Layer_Indicator, USER_EVENT_ACTIVE_LAYER_CHANGE, NULL);
     }
+#ifdef RGB_MATRIX_ENABLE
     bool            rgb_effect_redraw = false;
     static uint16_t last_effect       = 0xFFFF;
     uint8_t         curr_effect       = rgb_matrix_config.mode;
@@ -325,6 +329,7 @@ void lvgl_event_triggers(void) {
     if (rgb_effect_redraw) {
         lv_event_send(ui_Screen1_Label_RGB, USER_EVENT_RGBMODE_UPDATE, NULL);
     }
+#endif
 
     bool altmod_state_redraw = false;
     static uint32_t last_altmod_state   = 0;
@@ -394,15 +399,19 @@ void display_init(void) {
     lv_obj_set_style_text_align(ui_Screen1_Label_CPI, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_event_cb(ui_Screen1_Label_CPI, ui_render_cpi, USER_EVENT_CPI_UPDATE, NULL);
 
-    ui_Screen1_Label_ACC = lv_label_create(ui_Screen1);
-    lv_obj_set_width(ui_Screen1_Label_ACC, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Screen1_Label_ACC, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Screen1_Label_ACC, 120);
-    lv_obj_set_y(ui_Screen1_Label_ACC, 65);
-    lv_obj_set_style_text_font(ui_Screen1_Label_ACC, &rb_24, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_align(ui_Screen1_Label_ACC, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_add_event_cb(ui_Screen1_Label_ACC, ui_render_acc, USER_EVENT_ACC_UPDATE, NULL);
+// SADEK: Add this back later when I implement functions for acceleration
+// #ifdef FP_POINTING_ACCELERATION_ENABLE
+    // ui_Screen1_Label_ACC = lv_label_create(ui_Screen1);
+    // lv_obj_set_width(ui_Screen1_Label_ACC, LV_SIZE_CONTENT);   /// 1
+    // lv_obj_set_height(ui_Screen1_Label_ACC, LV_SIZE_CONTENT);    /// 1
+    // lv_obj_set_x(ui_Screen1_Label_ACC, 120);
+    // lv_obj_set_y(ui_Screen1_Label_ACC, 65);
+    // lv_obj_set_style_text_font(ui_Screen1_Label_ACC, &rb_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+    // lv_obj_set_style_text_align(ui_Screen1_Label_ACC, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
+    // lv_obj_add_event_cb(ui_Screen1_Label_ACC, ui_render_acc, USER_EVENT_ACC_UPDATE, NULL);
+// #endif
 
+#ifdef RGB_MATRIX_ENABLE
     ui_Screen1_Label_RGB = lv_label_create(ui_Screen1);
     lv_obj_set_width(ui_Screen1_Label_RGB, 150);
     lv_obj_set_style_text_font(ui_Screen1_Label_RGB, &rb_18, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -410,6 +419,7 @@ void display_init(void) {
     lv_obj_set_y(ui_Screen1_Label_RGB, 105);
     lv_label_set_text(ui_Screen1_Label_RGB, "RGB");
     lv_obj_add_event_cb(ui_Screen1_Label_RGB, ui_render_rgbmode, USER_EVENT_RGBMODE_UPDATE, NULL);
+#endif
 
     ui_Screen1_Label_ALTMOD = lv_img_create(ui_Screen1);
     lv_obj_set_width(ui_Screen1_Label_ALTMOD, LV_SIZE_CONTENT);   /// 81

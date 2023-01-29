@@ -11,6 +11,11 @@
     },
     {
         "type" : "single",
+        "name" : "FP_DISPLAY_ENABLE",
+        "user_input": "Do you have a display installed?"
+    },
+    {
+        "type" : "single",
         "name" : "HAPTIC_ENABLE",
         "user_input": "Do you have haptic feedback?"
     }

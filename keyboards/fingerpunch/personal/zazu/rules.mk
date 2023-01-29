@@ -16,23 +16,6 @@ RGB_MATRIX_ENABLE = no
 RGB_MATRIX_DRIVER = WS2812  # RGB matrix driver support
 WS2812_DRIVER = vendor
 
-# SADEK: DISPLAY: COMMENT OUT FOR NOW
-# QUANTUM_PAINTER_DRIVERS += st7789_spi
-# QUANTUM_PAINTER_LVGL_INTEGRATION = yes
-
-# SRC += assets/rb_24.c \
-#        assets/rb_18.c \
-#        assets/window.c \
-# 			 assets/tools.c \
-# 			 assets/hash.c \
-# 			 assets/apple.c \
-# 			 assets/cmd.c \
-# 			 assets/shift.c \
-# 			 assets/caret.c \
-# 			 assets/alt.c
-
-# SRC += display.c
-
 SRC += keyboards/fingerpunch/fp_matrix_74hc595_spi.c
 QUANTUM_LIB_SRC += spi_master.c
 CUSTOM_MATRIX = lite
@@ -41,11 +24,30 @@ HAPTIC_ENABLE ?= no
 HAPTIC_DRIVER = DRV2605L
 
 ifeq ($(strip $(FP_TRACKBALL_ENABLE)), yes)
-   MOUSEKEY_ENABLE := yes  # not required, but enabling for mouse button keys
-   POINTING_DEVICE_ENABLE := yes
-   POINTING_DEVICE_DRIVER := pmw3360
-   QUANTUM_LIB_SRC += spi_master.c
-   OPT_DEFS += -DFP_TRACKBALL_ENABLE
+  MOUSEKEY_ENABLE := yes  # not required, but enabling for mouse button keys
+  POINTING_DEVICE_ENABLE := yes
+  POINTING_DEVICE_DRIVER := pmw3360
+  QUANTUM_LIB_SRC += spi_master.c
+  OPT_DEFS += -DFP_TRACKBALL_ENABLE
+endif
+
+ifeq ($(strip $(FP_DISPLAY_ENABLE)), yes)
+  QUANTUM_PAINTER_DRIVERS += st7789_spi
+  QUANTUM_PAINTER_LVGL_INTEGRATION = yes
+  OPT_DEFS += -DFP_DISPLAY_ENABLE
+
+  SRC += assets/rb_24.c \
+         assets/rb_18.c \
+         assets/window.c \
+  			 assets/tools.c \
+  			 assets/hash.c \
+  			 assets/apple.c \
+  			 assets/cmd.c \
+  			 assets/shift.c \
+  			 assets/caret.c \
+  			 assets/alt.c
+
+  SRC += display.c
 endif
 
 DEFERRED_EXEC_ENABLE = yes

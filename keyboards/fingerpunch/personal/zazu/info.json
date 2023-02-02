@@ -10,7 +10,7 @@
         "console": false,
         "extrakey": true,
         "mousekey": true,
-        "nkro": true,
+        "nkro": false,
         "quantum_painter": true,
         "rgb_matrix": true,
         "wpm": true,

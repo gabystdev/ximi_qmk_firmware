@@ -18,10 +18,6 @@ LV_IMG_DECLARE(window);
 LV_IMG_DECLARE(apple);
 LV_IMG_DECLARE(hash);
 LV_IMG_DECLARE(tools);
-LV_IMG_DECLARE(cmd);
-LV_IMG_DECLARE(shift);
-LV_IMG_DECLARE(caret);
-LV_IMG_DECLARE(alt);
 
 uint8_t USER_EVENT_CPI_UPDATE;
 uint8_t USER_EVENT_ACTIVE_LAYER_CHANGE;
@@ -29,10 +25,6 @@ uint8_t USER_EVENT_CAPS_WORD_UPDATE;
 uint8_t USER_EVENT_DRAGSCROLL_UPDATE;
 uint8_t USER_EVENT_ACC_UPDATE;
 uint8_t USER_EVENT_RGBMODE_UPDATE;
-uint8_t USER_EVENT_ALTMOD;
-uint8_t USER_EVENT_CMDMOD;
-uint8_t USER_EVENT_SHIFTMOD;
-uint8_t USER_EVENT_CTRLMOD;
 
 extern lv_obj_t * mbox1;
 extern lv_obj_t * mbox1_title;
@@ -42,10 +34,6 @@ extern lv_obj_t * ui_Screen1_Label_CPI;
 extern lv_obj_t * ui_Screen1_deflayer;
 extern lv_obj_t * ui_Screen1_Label_ACC;
 extern lv_obj_t * ui_Screen1_Label_RGB;
-extern lv_obj_t * ui_Screen1_Label_ALTMOD;
-extern lv_obj_t * ui_Screen1_Label_CMDMOD;
-extern lv_obj_t * ui_Screen1_Label_SHIFTMOD;
-extern lv_obj_t * ui_Screen1_Label_CTRLMOD;
 extern lv_obj_t * ui_Layer_Indicator;
 extern lv_obj_t * ui_Screen1_deflayer_list;
 

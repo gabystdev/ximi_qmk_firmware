@@ -133,7 +133,11 @@ void keyboard_pre_init_kb(void) {
     keyboard_pre_init_user();
 }
 
+__attribute__((weak)) void keyboard_post_init_fp_kb(void) {  }
+
 void keyboard_post_init_kb(void) {
+    keyboard_post_init_fp_kb();
+
     #if defined(PIMORONI_TRACKBALL_ENABLE) && !defined(RGBLIGHT_ENABLE)
     pimoroni_trackball_set_rgbw(RGB_BLUE, 0x00);
     #endif

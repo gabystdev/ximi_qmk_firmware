@@ -11,17 +11,8 @@ lv_obj_t * ui_Screen1_Label_CPI;
 lv_obj_t * ui_Screen1_deflayer;
 lv_obj_t * ui_Screen1_Label_ACC;
 lv_obj_t * ui_Screen1_Label_RGB;
-lv_obj_t * ui_Screen1_Label_ALTMOD;
-lv_obj_t * ui_Screen1_Label_CMDMOD;
-lv_obj_t * ui_Screen1_Label_SHIFTMOD;
-lv_obj_t * ui_Screen1_Label_CTRLMOD;
 lv_obj_t * ui_Layer_Indicator;
 lv_obj_t * ui_Screen1_deflayer_list;
-
-#define MODS_SHIFT ((get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT)
-#define MODS_CTRL  ((get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL)
-#define MODS_ALT   ((get_mods() | get_oneshot_mods()) & MOD_MASK_ALT)
-#define MODS_GUI   ((get_mods() | get_oneshot_mods()) & MOD_MASK_GUI)
 
 uint8_t USER_EVENT_CPI_UPDATE = 0;
 uint8_t USER_EVENT_ACTIVE_LAYER_CHANGE = 1;
@@ -30,10 +21,6 @@ uint8_t USER_EVENT_DRAGSCROLL_UPDATE = 3;
 uint8_t USER_EVENT_SNIPING_UPDATE = 4;
 uint8_t USER_EVENT_ACC_UPDATE = 5;
 uint8_t USER_EVENT_RGBMODE_UPDATE = 6;
-uint8_t USER_EVENT_ALTMOD = 7;
-uint8_t USER_EVENT_CMDMOD = 8;
-uint8_t USER_EVENT_SHIFTMOD = 9;
-uint8_t USER_EVENT_CTRLMOD = 10;
 
 void lv_msgbox_1(const char *myString) {
     mbox1 = lv_msgbox_create(ui_Screen1, myString, "ACTIVE", NULL, false);// Do something when Caps Word activates.
@@ -95,10 +82,6 @@ void ui_active_layer_change(lv_event_t * e) {
                  break;
         }
   }
-}
-
-void qmk_lv_set_layer(uint8_t layer) {
-    layer_move(layer);
 }
 
 uint8_t qmk_lv_active_layer(void) {
@@ -191,54 +174,6 @@ void ui_render_rgbmode(lv_event_t * e) {
 }
 #endif // RGB_MATRIX_ENABLE
 
-void ui_render_altmod(lv_event_t * e) {
-    lv_event_code_t event_code = lv_event_get_code(e);
-    if(event_code == USER_EVENT_ALTMOD) {
-        if (MODS_ALT) {
-          lv_obj_clear_flag(ui_Screen1_Label_ALTMOD, LV_OBJ_FLAG_HIDDEN);
-        }
-        else {
-          lv_obj_add_flag(ui_Screen1_Label_ALTMOD, LV_OBJ_FLAG_HIDDEN);
-        }
-    }
-}
-
-void ui_render_cmdmod(lv_event_t * e) {
-    lv_event_code_t event_code = lv_event_get_code(e);
-    if(event_code == USER_EVENT_CMDMOD) {
-        if (MODS_GUI) {
-          lv_obj_clear_flag(ui_Screen1_Label_CMDMOD, LV_OBJ_FLAG_HIDDEN);
-        }
-        else {
-          lv_obj_add_flag(ui_Screen1_Label_CMDMOD, LV_OBJ_FLAG_HIDDEN);
-        }
-    }
-}
-
-void ui_render_shiftmod(lv_event_t * e) {
-    lv_event_code_t event_code = lv_event_get_code(e);
-    if(event_code == USER_EVENT_SHIFTMOD) {
-        if (MODS_SHIFT) {
-          lv_obj_clear_flag(ui_Screen1_Label_SHIFTMOD, LV_OBJ_FLAG_HIDDEN);
-        }
-        else {
-          lv_obj_add_flag(ui_Screen1_Label_SHIFTMOD, LV_OBJ_FLAG_HIDDEN);
-        }
-    }
-}
-
-void ui_render_ctrlmod(lv_event_t * e) {
-    lv_event_code_t event_code = lv_event_get_code(e);
-    if(event_code == USER_EVENT_CTRLMOD) {
-        if (MODS_CTRL) {
-          lv_obj_clear_flag(ui_Screen1_Label_CTRLMOD, LV_OBJ_FLAG_HIDDEN);
-        }
-        else {
-          lv_obj_add_flag(ui_Screen1_Label_CTRLMOD, LV_OBJ_FLAG_HIDDEN);
-        }
-    }
-}
-
 // SADEK: Add this back later when I implement functions for acceleration
 // #ifdef FP_POINTING_ACCELERATION_ENABLE
 // void set_acc_text_value(lv_obj_t* lbl) {
@@ -330,46 +265,6 @@ void lvgl_event_triggers(void) {
         lv_event_send(ui_Screen1_Label_RGB, USER_EVENT_RGBMODE_UPDATE, NULL);
     }
 #endif
-
-    bool altmod_state_redraw = false;
-    static uint32_t last_altmod_state   = 0;
-    if (last_altmod_state != MODS_ALT) {
-        last_altmod_state = MODS_ALT;
-        altmod_state_redraw = true;
-    }
-    if (altmod_state_redraw) {
-      lv_event_send(ui_Screen1_Label_ALTMOD, USER_EVENT_ALTMOD, NULL);
-    }
-
-    bool cmdmod_state_redraw = false;
-    static uint32_t last_cmdmod_state   = 0;
-    if (last_cmdmod_state != MODS_GUI) {
-        last_cmdmod_state = MODS_GUI;
-        cmdmod_state_redraw = true;
-    }
-    if (cmdmod_state_redraw) {
-      lv_event_send(ui_Screen1_Label_CMDMOD, USER_EVENT_CMDMOD, NULL);
-    }
-
-    bool shiftmod_state_redraw = false;
-    static uint32_t last_shiftmod_state   = 0;
-    if (last_shiftmod_state != MODS_SHIFT) {
-        last_shiftmod_state = MODS_SHIFT;
-        shiftmod_state_redraw = true;
-    }
-    if (shiftmod_state_redraw) {
-      lv_event_send(ui_Screen1_Label_SHIFTMOD, USER_EVENT_SHIFTMOD, NULL);
-    }
-
-    bool ctrlmod_state_redraw = false;
-    static uint32_t last_ctrlmod_state   = 0;
-    if (last_ctrlmod_state != MODS_CTRL) {
-        last_ctrlmod_state = MODS_CTRL;
-        ctrlmod_state_redraw = true;
-    }
-    if (ctrlmod_state_redraw) {
-      lv_event_send(ui_Screen1_Label_CTRLMOD, USER_EVENT_CTRLMOD, NULL);
-    }
 }
 
 void display_init(void) {
@@ -420,46 +315,6 @@ void display_init(void) {
     lv_label_set_text(ui_Screen1_Label_RGB, "RGB");
     lv_obj_add_event_cb(ui_Screen1_Label_RGB, ui_render_rgbmode, USER_EVENT_RGBMODE_UPDATE, NULL);
 #endif
-
-    ui_Screen1_Label_ALTMOD = lv_img_create(ui_Screen1);
-    lv_obj_set_width(ui_Screen1_Label_ALTMOD, LV_SIZE_CONTENT);   /// 81
-    lv_obj_set_height(ui_Screen1_Label_ALTMOD, LV_SIZE_CONTENT);    /// 55
-    lv_obj_set_x(ui_Screen1_Label_ALTMOD, -20);
-    lv_obj_set_y(ui_Screen1_Label_ALTMOD, -50);
-    lv_obj_set_align(ui_Screen1_Label_ALTMOD, LV_ALIGN_RIGHT_MID);
-    lv_img_set_src(ui_Screen1_Label_ALTMOD, &alt);
-    lv_obj_add_event_cb(ui_Screen1_Label_ALTMOD, ui_render_altmod, USER_EVENT_ALTMOD, NULL);
-    lv_event_send(ui_Screen1_Label_ALTMOD, USER_EVENT_ALTMOD, NULL);
-
-    ui_Screen1_Label_CMDMOD = lv_img_create(ui_Screen1);
-    lv_obj_set_width(ui_Screen1_Label_CMDMOD, LV_SIZE_CONTENT);   /// 81
-    lv_obj_set_height(ui_Screen1_Label_CMDMOD, LV_SIZE_CONTENT);    /// 55
-    lv_obj_set_x(ui_Screen1_Label_CMDMOD, -20);
-    lv_obj_set_y(ui_Screen1_Label_CMDMOD, -23);
-    lv_obj_set_align(ui_Screen1_Label_CMDMOD, LV_ALIGN_RIGHT_MID);
-    lv_img_set_src(ui_Screen1_Label_CMDMOD, &cmd);
-    lv_obj_add_event_cb(ui_Screen1_Label_CMDMOD, ui_render_cmdmod, USER_EVENT_CMDMOD, NULL);
-    lv_event_send(ui_Screen1_Label_CMDMOD, USER_EVENT_CMDMOD, NULL);
-
-    ui_Screen1_Label_SHIFTMOD = lv_img_create(ui_Screen1);
-    lv_obj_set_width(ui_Screen1_Label_SHIFTMOD, LV_SIZE_CONTENT);   /// 81
-    lv_obj_set_height(ui_Screen1_Label_SHIFTMOD, LV_SIZE_CONTENT);    /// 55
-    lv_obj_set_x(ui_Screen1_Label_SHIFTMOD, -20);
-    lv_obj_set_y(ui_Screen1_Label_SHIFTMOD, 4);
-    lv_obj_set_align(ui_Screen1_Label_SHIFTMOD, LV_ALIGN_RIGHT_MID);
-    lv_img_set_src(ui_Screen1_Label_SHIFTMOD, &shift);
-    lv_obj_add_event_cb(ui_Screen1_Label_SHIFTMOD, ui_render_shiftmod, USER_EVENT_SHIFTMOD, NULL);
-    lv_event_send(ui_Screen1_Label_SHIFTMOD, USER_EVENT_SHIFTMOD, NULL);
-
-    ui_Screen1_Label_CTRLMOD = lv_img_create(ui_Screen1);
-    lv_obj_set_width(ui_Screen1_Label_CTRLMOD, LV_SIZE_CONTENT);   /// 81
-    lv_obj_set_height(ui_Screen1_Label_CTRLMOD, LV_SIZE_CONTENT);    /// 55
-    lv_obj_set_x(ui_Screen1_Label_CTRLMOD, -20);
-    lv_obj_set_y(ui_Screen1_Label_CTRLMOD, 31);
-    lv_obj_set_align(ui_Screen1_Label_CTRLMOD, LV_ALIGN_RIGHT_MID);
-    lv_img_set_src(ui_Screen1_Label_CTRLMOD, &caret);
-    lv_obj_add_event_cb(ui_Screen1_Label_CTRLMOD, ui_render_ctrlmod, USER_EVENT_CTRLMOD, NULL);
-    lv_event_send(ui_Screen1_Label_CTRLMOD, USER_EVENT_CTRLMOD, NULL);
 
     lv_disp_load_scr(ui_Screen1);
 }

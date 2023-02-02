@@ -42,10 +42,6 @@ ifeq ($(strip $(FP_DISPLAY_ENABLE)), yes)
   			 assets/tools.c \
   			 assets/hash.c \
   			 assets/apple.c \
-  			 assets/cmd.c \
-  			 assets/shift.c \
-  			 assets/caret.c \
-  			 assets/alt.c
 
   SRC += display.c
 endif

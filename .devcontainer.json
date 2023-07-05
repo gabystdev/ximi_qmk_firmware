@@ -1,0 +1,6 @@
+{
+  "image": "qmkfm/qmk_cli",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  }
+}

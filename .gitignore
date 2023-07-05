@@ -28,7 +28,7 @@ quantum/version.h
 *.eep
 *.hex
 *.qmk
-*.uf2
+#*.uf2
 
 # Old-style QMK Makefiles
 /keyboards/**/Makefile
